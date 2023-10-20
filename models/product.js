@@ -25,7 +25,7 @@ module.exports = (sequelize, Sequelize) =>{
             allownull:true
         },
         images:{
-            type:DataTypes.BLOB,
+            type:DataTypes.STRING,
             allownull:false
         },
         category:{

@@ -1,23 +1,45 @@
+const multer = require("multer");
 const db = require("../config/db");
+const { catchasyncerror } = require("../middlewares/catchasync");
 const prodcuts = db.product;
-const {ErrorHandler} = require("../utils/errorhandler")
+const {ErrorHandler} = require("../utils/errorhandler");
+const path = require("path");
+const fs = require("fs")
+const Joi = require("joi")
 
 
 
+// const storage = multer.diskStorage({
+//   destination:(req, file, cb) => cb(null, 'uploads/'),
+//   filename:(req,file,cb)=>{
+//     const filename = `${Date.now()}-${Math.round(Math.random()* 1E9)}${path.extname(file.originalname)}`;
+//     cb(null,filename)
 
-exports.productcreate = async(req, res) =>{
-try {
-    const product = await prodcuts.create(req.body)
+//   }
+// });
 
-    res.status(200).json({
-        success:true,
-        product,
-        Message:"Product Created Successfully"
+// const handle = multer({storage}).single('image');
+
+exports.democreate = async(req, res) =>{
+   try {
+      const data = await prodcuts.create(req.body);
+      res.status(200).send({data})
+   } catch (error) {
+      res.send("went " + error)
+   }
+}
+
+
+
+exports.productcreate = catchasyncerror(async(req, res) =>{
+
+   const product = await prodcuts.create(req.body)
+      res.status(200).json({
+          success:true,
+          product,
+          Message:"Product Created Successfully"
+      });
     })
-} catch (error) {
-    res.status(400).send("went wrong" +error)
-}
-}
 
 
 exports.updateproduct = async(req, res, next) =>{
@@ -82,7 +104,7 @@ exports.singleproduct = async(req, res) =>{
 
 exports.allproduct = async(req, res) =>{
   try {
-    const product = await prodcuts.findAll()
+    const product = await prodcuts.findAll({})
 
     res.status(200).json({
         success:true,
@@ -92,6 +114,4 @@ exports.allproduct = async(req, res) =>{
   } catch (error) {
 res.status(400).send("went wrong" + error) 
   }
-    
-
 }

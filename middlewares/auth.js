@@ -1,13 +1,16 @@
 const jwt = require("jsonwebtoken");
 
-const env = require("dotenv").config()
+const env = require("dotenv").config();
+
+const{ ErrorHandler} = require("../utils/errorhandler")
 
 const verifyToken = (req, res, next) => {
  
-  const token =  req.cookies.access_token || req.headers["token"]
+  const token =  req.cookies.access_token || req.headers["token"] || req.get('Authorization').split("Bearer ")[1]
 
+  console.log(token)
   if (!token) {
-    res.json({
+   return  res.json({
       message: "A token is required for authentication",
       status: 400,
     });
@@ -27,10 +30,16 @@ const verifyToken = (req, res, next) => {
   return next();
 };
 
-// const auth = (req,res,next) =>{
+ const authroles = (...roles) =>{
+  return(req, res, next) =>{
+        if(!roles.includes(req.user.role)){
+        next (new ErrorHandler(`Role: ${req.user.role} is not allowed to access more`, 400))
+        }
+    
+        next();
+      }
+ }
+
+module.exports = { verifyToken, authroles };
 
 
-
-// }
-
-module.exports = { verifyToken };

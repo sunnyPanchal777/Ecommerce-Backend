@@ -1,28 +1,21 @@
-const sequelize = require("sequelize")
-const env = require("dotenv").config()
-
+const {Sequelize} = require("sequelize")
+const env = require("dotenv").config();
 
 const dbname = process.env.dbname;
 const dbuser = process.env.dbuser;
 const dbpassword =process.env.dbpassword;
 
-const Sequelize = new sequelize(dbname, dbuser, dbpassword, {
+const sequelize = new Sequelize(dbname, dbuser, dbpassword, {
     host:process.env.host,
     dialect: process.env.dialect
 })
 
-const db ={}
-
-db.user= require("../models/usermodel")(Sequelize);
-db.product= require("../models/product")(Sequelize)
-
-
-Sequelize.sync({
-
+sequelize.sync({
+//    alter:true
 }).then(() =>{
-    console.log("Conndect to Database")
+    console.log("Connected to Database")
 }).catch((err) =>{
     console.log(err)
 })
 
-module.exports = db
+module.exports = sequelize;
